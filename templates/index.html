@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#183c32">
+  <title>Portal de usuários</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="auth-layout">
+    <aside class="brand-panel">
+      <a class="wordmark" href="{{ url_for('index') }}"><span class="brand-mark">P</span> Pessoas</a>
+      <div class="brand-copy">
+        <p class="eyebrow">ÁREA DE ACESSO</p>
+        <h1>Portal de<br>usuários</h1>
+        <p class="brand-note">Um espaço organizado para manter seus cadastros em dia.</p>
+      </div>
+      <p class="brand-foot">GESTÃO DE CADASTROS <span>·</span> 2026</p>
+    </aside>
+
+    <section class="forms-panel">
+      <div class="form-wrap">
+        <div class="form-heading">
+          <p class="eyebrow">BEM-VINDO</p>
+          <h2>Acesse sua conta</h2>
+          <p>Entre para continuar ou crie um novo cadastro.</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="messages" aria-live="polite">
+              {% for category, message in messages %}
+                <p class="message message-{{ category }}">{{ message }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <div class="tabs" role="tablist" aria-label="Acesso e cadastro">
+          <button class="tab {% if active_form != 'register' %}is-active{% endif %}" type="button" role="tab" aria-selected="{{ 'true' if active_form != 'register' else 'false' }}" aria-controls="login-panel" data-tab="login">Entrar</button>
+          <button class="tab {% if active_form == 'register' %}is-active{% endif %}" type="button" role="tab" aria-selected="{{ 'true' if active_form == 'register' else 'false' }}" aria-controls="register-panel" data-tab="register">Criar cadastro</button>
+        </div>
+
+        <section class="form-panel {% if active_form != 'register' %}is-visible{% endif %}" id="login-panel" role="tabpanel">
+          <form action="{{ url_for('login') }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label for="login-username">Usuário</label>
+            <input id="login-username" name="username" type="text" autocomplete="username" required maxlength="30" placeholder="Seu usuário">
+            <label for="login-password">Senha</label>
+            <input id="login-password" name="password" type="password" autocomplete="current-password" required placeholder="Sua senha">
+            <button class="button button-primary" type="submit">Entrar <span aria-hidden="true">↗</span></button>
+          </form>
+        </section>
+
+        <section class="form-panel {% if active_form == 'register' %}is-visible{% endif %}" id="register-panel" role="tabpanel">
+          <form action="{{ url_for('register') }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label for="register-name">Nome completo</label>
+            <input id="register-name" name="name" type="text" autocomplete="name" required maxlength="100" placeholder="Nome e sobrenome">
+            <div class="field-row">
+              <div>
+                <label for="register-age">Idade</label>
+                <input id="register-age" name="age" type="number" min="0" max="130" required placeholder="Ex.: 28">
+              </div>
+              <div>
+                <label for="register-sex">Sexo</label>
+                <select id="register-sex" name="sex" required>
+                  <option value="" disabled selected>Selecione</option>
+                  <option value="feminino">Feminino</option>
+                  <option value="masculino">Masculino</option>
+                  <option value="outro">Outro</option>
+                  <option value="nao_informar">Prefiro não informar</option>
+                </select>
+              </div>
+            </div>
+            <label for="register-username">Usuário</label>
+            <input id="register-username" name="username" type="text" autocomplete="username" required minlength="3" maxlength="30" pattern="[A-Za-z0-9_.-]+" placeholder="Escolha um usuário">
+            <label for="register-password">Senha</label>
+            <input id="register-password" name="password" type="password" autocomplete="new-password" required minlength="8" placeholder="Mínimo de 8 caracteres">
+            <button class="button button-primary" type="submit">Criar conta <span aria-hidden="true">↗</span></button>
+          </form>
+        </section>
+        <p class="security-note"><span aria-hidden="true">●</span> Acesso protegido por senha</p>
+      </div>
+    </section>
+  </main>
+  <script>
+    const tabs = document.querySelectorAll('[data-tab]');
+    const panels = document.querySelectorAll('.form-panel');
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((item) => {
+          const selected = item === tab;
+          item.classList.toggle('is-active', selected);
+          item.setAttribute('aria-selected', String(selected));
+        });
+        panels.forEach((panel) => {
+          panel.classList.toggle('is-visible', panel.id === `${tab.dataset.tab}-panel`);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+*** Test Cases ***,${age},${sex}
+,24,feminino
+,31,masculino
+,45,outro
+,28,nao_informar
+,37,feminino

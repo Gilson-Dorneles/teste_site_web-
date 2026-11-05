@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#183c32">
+  <title>Cadastros · Pessoas</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dashboard-page">
+  <header class="topbar">
+    <a class="wordmark" href="{{ url_for('dashboard') }}"><span class="brand-mark">P</span> Pessoas</a>
+    <div class="account-menu">
+      <span class="account-name">{{ current_user.name }}</span>
+      <form action="{{ url_for('logout') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="button button-quiet" type="submit">Sair <span aria-hidden="true">↗</span></button>
+      </form>
+    </div>
+  </header>
+
+  <main class="dashboard-content">
+    <div class="dashboard-heading">
+      <div>
+        <p class="eyebrow">VISÃO GERAL</p>
+        <h1>Cadastros</h1>
+      </div>
+      <span class="count-label">{{ users|length }} {{ 'pessoa cadastrada' if users|length == 1 else 'pessoas cadastradas' }}</span>
+    </div>
+
+    <section class="table-section" aria-label="Pessoas cadastradas">
+      {% if users %}
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr><th>Nome</th><th>Usuário</th><th>Idade</th><th>Sexo</th><th>Cadastro</th><th>Ações</th></tr>
+            </thead>
+            <tbody>
+              {% for user in users %}
+                <tr>
+                  <td class="person-cell"><span class="person-avatar">{{ user.name[:1]|upper }}</span>{{ user.name }}</td>
+                  <td class="muted-cell">{{ user.username }}</td>
+                  <td>{{ user.age }} anos</td>
+                  <td>{{ sex_labels[user.sex] }}</td>
+                  <td class="muted-cell">{{ user.created_at[:10] }}</td>
+                  <td>
+                    <form class="delete-form" action="{{ url_for('delete_user', user_id=user.id) }}" method="post" onsubmit="return confirm('Excluir este cadastro permanentemente?')">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button class="button button-delete" type="submit" aria-label="Excluir cadastro de {{ user.name }}">Excluir</button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="empty-state">Nenhum cadastro encontrado.</p>
+      {% endif %}
+    </section>
+    <p class="list-footnote">Conectado como <strong>{{ current_user.username }}</strong></p>
+  </main>
+</body>
+</html>

@@ -1,0 +1,5 @@
+-r requirements.txt
+robotframework==7.5
+robotframework-datadriver==1.11.2
+robotframework-faker==6.0.0
+robotframework-seleniumlibrary==6.9.0
